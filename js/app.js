@@ -1,4 +1,3 @@
-// js/app.js
 var App = {
     tg: null, currentFilter: 'recent',
     init: function() {
@@ -41,6 +40,7 @@ var App = {
         ['buyAmount','sellAmount','royalty'].forEach(function(id){
             document.getElementById(id).addEventListener('input', function(){App.calculateProfit();});
         });
+        document.getElementById('nftLink').addEventListener('input', function() { App.fetchNFTPreview(); });
     },
     setupSync: function() {
         document.getElementById('syncRequestBtn').addEventListener('click', function(){
@@ -140,6 +140,32 @@ var App = {
         document.getElementById('profitGram').textContent = (profit>=0?'+':'') + profit.toFixed(4) + ' GRAM';
         document.getElementById('profitUsd').textContent = '$' + usd.toFixed(2);
         document.getElementById('profitPreview').style.borderColor = profit>=0 ? 'var(--profit-positive)' : 'var(--profit-negative)';
+    },
+    fetchNFTPreview: async function() {
+        var link = document.getElementById('nftLink').value.trim();
+        if (!link) return;
+        var preview = document.getElementById('nftPreview');
+        var img = document.getElementById('nftPreviewImage');
+        var nameEl = document.getElementById('nftPreviewName');
+        var collEl = document.getElementById('nftPreviewCollection');
+        preview.style.display = 'flex';
+        img.src = 'assets/placeholder.png';
+        nameEl.textContent = 'Загрузка...';
+        try {
+            var resp = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(link));
+            var data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                if (data.data.image && data.data.image.url) {
+                    img.src = data.data.image.url;
+                }
+                nameEl.textContent = data.data.title || 'NFT';
+                collEl.textContent = data.data.description || '';
+            } else {
+                nameEl.textContent = 'Не удалось загрузить';
+            }
+        } catch(e) {
+            nameEl.textContent = 'Ошибка загрузки';
+        }
     },
     addSale: function() {
         var coll = document.getElementById('collectionInput').value;
