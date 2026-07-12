@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+<button onclick="test()" style="padding:20px;font-size:24px;">ТЕСТ SENDDATA</button>
+<script>
+function test() {
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({action:'add_sale', category:'Test', buy_amount:1, sell_amount:2, royalty:0.3, profit_gram:0.7}));
+        alert('Данные отправлены!');
+    } else {
+        alert('Telegram WebApp не обнаружен. Откройте эту страницу из меню бота.');
+    }
+}
+</script>
+</body>
+</html>
